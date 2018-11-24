@@ -6,6 +6,7 @@ import (
 
 type TFilter struct {
 	objs []interface{}
+	size int
 }
 
 func Init(objs interface{}) *TFilter {
@@ -22,6 +23,7 @@ func Init(objs interface{}) *TFilter {
 
 	tf := new(TFilter)
 	tf.objs = ret
+	tf.size = len(ret)
 
 	return tf
 }
