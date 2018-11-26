@@ -1,7 +1,9 @@
 package TFilter
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -9,6 +11,7 @@ const (
 	EQ = "EQ"
 	LT = "LT"
 	GT = "GT"
+	IN = "IN"
 )
 
 func (tf *TFilter) EQ(key string, value interface{}) *TFilter {
@@ -19,6 +22,9 @@ func (tf *TFilter) LT(key string, value interface{}) *TFilter {
 }
 func (tf *TFilter) GT(key string, value interface{}) *TFilter {
 	return tf.searcher(GT, key, value)
+}
+func (tf *TFilter) IN(key string, value interface{}) *TFilter {
+	return tf.searcher(IN, key, value)
 }
 
 func (tf *TFilter) searcher(operation string, key string, value interface{}) *TFilter {
@@ -34,6 +40,8 @@ func (tf *TFilter) searcher(operation string, key string, value interface{}) *TF
 			go searchLT(tf.objs[i:i+maxChan], key, value, resChan)
 		case GT:
 			go searchGT(tf.objs[i:i+maxChan], key, value, resChan)
+		case IN:
+			go searchIN(tf.objs[i:i+maxChan], key, value, resChan)
 		}
 	}
 
@@ -162,6 +170,57 @@ func searchGT(objs []interface{}, key string, value interface{}, resChan chan []
 						shouldAppend = true
 					}
 
+				}
+				if shouldAppend {
+					auxObj = append(auxObj, obj)
+
+				}
+			}
+		}
+	}
+	resChan <- auxObj
+}
+
+func searchIN(objs []interface{}, key string, value interface{}, resChan chan []interface{}) {
+	auxObj := []interface{}{}
+	for _, obj := range objs {
+		RValue := reflect.ValueOf(obj)
+		RType := reflect.TypeOf(obj)
+
+		for i := 0; i < RValue.NumField(); i++ {
+			fieldRType := RType.Field(i)
+			fieldRValue := RValue.Field(i)
+
+			zero := reflect.Zero(fieldRValue.Type()).Interface()
+			isZero := reflect.DeepEqual(fieldRValue.Interface(), zero)
+			if !isZero && fieldRType.Tag.Get("key") == key {
+				shouldAppend := false
+				switch fieldRValue.Interface().(type) {
+
+				case []int, []int32, []int64:
+					objVal := fieldRValue.Interface().([]int64)
+					val := value.(int64)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				case []float32, []float64:
+					objVal := fieldRValue.Interface().([]float64)
+					val := value.(float64)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				default:
+					objVal := fmt.Sprint(fieldRValue.Interface())
+					val := fmt.Sprint(value)
+					if strings.Contains(objVal, val) {
+						shouldAppend = true
+					}
 				}
 				if shouldAppend {
 					auxObj = append(auxObj, obj)
