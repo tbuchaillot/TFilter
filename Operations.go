@@ -52,7 +52,7 @@ func (tf *TFilter) searcher(operation string, key string, value interface{}) *TF
 		}
 	}
 	tf.objs = tf.objs[0:len(auxObj)]
-	copy(auxObj, tf.objs)
+	copy(tf.objs, auxObj)
 
 	return tf
 }
@@ -115,6 +115,9 @@ func searchLT(objs []interface{}, key string, value interface{}, resChan chan []
 				case time.Time:
 					objVal := fieldRValue.Interface().(time.Time)
 					val := value.(time.Time)
+					fmt.Println(val, " before ", objVal)
+					fmt.Println(val.Before(objVal))
+
 					if val.Before(objVal) {
 						shouldAppend = true
 					}
