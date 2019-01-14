@@ -69,7 +69,7 @@ func searchEQ(objs []interface{}, key string, value interface{}, resChan chan []
 
 			zero := reflect.Zero(fieldRValue.Type()).Interface()
 			isZero := reflect.DeepEqual(fieldRValue.Interface(), zero)
-			if !isZero && fieldRType.Tag.Get("key") == key {
+			if !isZero && (fieldRType.Tag.Get("key") == key || fieldRType.Tag.Get("json") == key) {
 				if fieldRValue.Interface() == value {
 					auxObj = append(auxObj, obj)
 				}
@@ -91,7 +91,7 @@ func searchLT(objs []interface{}, key string, value interface{}, resChan chan []
 
 			zero := reflect.Zero(fieldRValue.Type()).Interface()
 			isZero := reflect.DeepEqual(fieldRValue.Interface(), zero)
-			if !isZero && fieldRType.Tag.Get("key") == key {
+			if !isZero && (fieldRType.Tag.Get("key") == key || fieldRType.Tag.Get("json") == key) {
 				shouldAppend := false
 				switch fieldRValue.Interface().(type) {
 				case string:
@@ -100,13 +100,31 @@ func searchLT(objs []interface{}, key string, value interface{}, resChan chan []
 					if len(objVal) > len(val) {
 						shouldAppend = true
 					}
-				case float32, float64:
+				case float32:
+					objVal := fieldRValue.Interface().(float32)
+					val := value.(float32)
+					if objVal > val {
+						shouldAppend = true
+					}
+				case float64:
 					objVal := fieldRValue.Interface().(float64)
 					val := value.(float64)
 					if objVal > val {
 						shouldAppend = true
 					}
-				case int, int16, int32, int64:
+				case int:
+					objVal := fieldRValue.Interface().(int)
+					val := value.(int)
+					if objVal > val {
+						shouldAppend = true
+					}
+				case int32:
+					objVal := fieldRValue.Interface().(int32)
+					val := value.(int32)
+					if objVal > val {
+						shouldAppend = true
+					}
+				case int64:
 					objVal := fieldRValue.Interface().(int64)
 					val := value.(int64)
 					if objVal > val {
@@ -145,22 +163,40 @@ func searchGT(objs []interface{}, key string, value interface{}, resChan chan []
 
 			zero := reflect.Zero(fieldRValue.Type()).Interface()
 			isZero := reflect.DeepEqual(fieldRValue.Interface(), zero)
-			if !isZero && fieldRType.Tag.Get("key") == key {
+			if !isZero && (fieldRType.Tag.Get("key") == key || fieldRType.Tag.Get("json") == key) {
 				shouldAppend := false
 				switch fieldRValue.Interface().(type) {
 				case string:
 					objVal := fieldRValue.Interface().(string)
 					val := value.(string)
-					if len(objVal) < len(val) {
+					if objVal < val {
 						shouldAppend = true
 					}
-				case float32, float64:
+				case float32:
+					objVal := fieldRValue.Interface().(float32)
+					val := value.(float32)
+					if objVal < val {
+						shouldAppend = true
+					}
+				case float64:
 					objVal := fieldRValue.Interface().(float64)
 					val := value.(float64)
 					if objVal < val {
 						shouldAppend = true
 					}
-				case int, int16, int32, int64:
+				case int:
+					objVal := fieldRValue.Interface().(int)
+					val := value.(int)
+					if objVal < val {
+						shouldAppend = true
+					}
+				case int32:
+					objVal := fieldRValue.Interface().(int32)
+					val := value.(int32)
+					if objVal < val {
+						shouldAppend = true
+					}
+				case int64:
 					objVal := fieldRValue.Interface().(int64)
 					val := value.(int64)
 					if objVal < val {
@@ -196,11 +232,29 @@ func searchIN(objs []interface{}, key string, value interface{}, resChan chan []
 
 			zero := reflect.Zero(fieldRValue.Type()).Interface()
 			isZero := reflect.DeepEqual(fieldRValue.Interface(), zero)
-			if !isZero && fieldRType.Tag.Get("key") == key {
+			if !isZero && (fieldRType.Tag.Get("key") == key || fieldRType.Tag.Get("json") == key) {
 				shouldAppend := false
 				switch fieldRValue.Interface().(type) {
 
-				case []int, []int32, []int64:
+				case []int:
+					objVal := fieldRValue.Interface().([]int)
+					val := value.(int)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				case []int32:
+					objVal := fieldRValue.Interface().([]int32)
+					val := value.(int32)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				case []int64:
 					objVal := fieldRValue.Interface().([]int64)
 					val := value.(int64)
 					for _, v := range objVal {
@@ -209,9 +263,27 @@ func searchIN(objs []interface{}, key string, value interface{}, resChan chan []
 							break
 						}
 					}
-				case []float32, []float64:
+				case []float32:
+					objVal := fieldRValue.Interface().([]float32)
+					val := value.(float32)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				case []float64:
 					objVal := fieldRValue.Interface().([]float64)
 					val := value.(float64)
+					for _, v := range objVal {
+						if v == val {
+							shouldAppend = true
+							break
+						}
+					}
+				case []string:
+					objVal := fieldRValue.Interface().([]string)
+					val := value.(string)
 					for _, v := range objVal {
 						if v == val {
 							shouldAppend = true
