@@ -53,7 +53,7 @@ func (tf *TFilter) searcher(operation string, key string, value interface{}) *TF
 	}
 	tf.objs = tf.objs[0:len(auxObj)]
 	copy(tf.objs, auxObj)
-
+	tf.size = len(tf.objs)
 	return tf
 }
 
@@ -133,9 +133,6 @@ func searchLT(objs []interface{}, key string, value interface{}, resChan chan []
 				case time.Time:
 					objVal := fieldRValue.Interface().(time.Time)
 					val := value.(time.Time)
-					fmt.Println(val, " before ", objVal)
-					fmt.Println(val.Before(objVal))
-
 					if val.Before(objVal) {
 						shouldAppend = true
 					}
@@ -235,7 +232,6 @@ func searchIN(objs []interface{}, key string, value interface{}, resChan chan []
 			if !isZero && (fieldRType.Tag.Get("key") == key || fieldRType.Tag.Get("json") == key) {
 				shouldAppend := false
 				switch fieldRValue.Interface().(type) {
-
 				case []int:
 					objVal := fieldRValue.Interface().([]int)
 					val := value.(int)
