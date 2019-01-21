@@ -133,7 +133,7 @@ func searchLT(objs []interface{}, key string, value interface{}, resChan chan []
 				case time.Time:
 					objVal := fieldRValue.Interface().(time.Time)
 					val := value.(time.Time)
-					if val.Before(objVal) {
+					if val.After(objVal) {
 						shouldAppend = true
 					}
 
@@ -202,7 +202,7 @@ func searchGT(objs []interface{}, key string, value interface{}, resChan chan []
 				case time.Time:
 					objVal := fieldRValue.Interface().(time.Time)
 					val := value.(time.Time)
-					if val.After(objVal) {
+					if val.Before(objVal) {
 						shouldAppend = true
 					}
 
@@ -234,54 +234,207 @@ func searchIN(objs []interface{}, key string, value interface{}, resChan chan []
 				switch fieldRValue.Interface().(type) {
 				case []int:
 					objVal := fieldRValue.Interface().([]int)
-					val := value.(int)
-					for _, v := range objVal {
-						if v == val {
-							shouldAppend = true
-							break
+					switch value.(type) {
+					case []int:
+						val := value.([]int)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case int:
+						val := value.(int)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if fmt.Sprint(v) == val {
+								shouldAppend = true
+								break
+							}
 						}
 					}
 				case []int32:
 					objVal := fieldRValue.Interface().([]int32)
-					val := value.(int32)
-					for _, v := range objVal {
-						if v == val {
-							shouldAppend = true
-							break
+					switch value.(type) {
+					case []int32:
+						val := value.([]int32)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case int32:
+						val := value.(int32)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if fmt.Sprint(v) == val {
+								shouldAppend = true
+								break
+							}
 						}
 					}
 				case []int64:
 					objVal := fieldRValue.Interface().([]int64)
-					val := value.(int64)
-					for _, v := range objVal {
-						if v == val {
-							shouldAppend = true
-							break
+					switch value.(type) {
+					case []int64:
+						val := value.([]int64)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case int64:
+						val := value.(int64)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if fmt.Sprint(v) == val {
+								shouldAppend = true
+								break
+							}
 						}
 					}
 				case []float32:
 					objVal := fieldRValue.Interface().([]float32)
-					val := value.(float32)
-					for _, v := range objVal {
-						if v == val {
-							shouldAppend = true
-							break
+					switch value.(type) {
+					case []float32:
+						val := value.([]float32)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case float32:
+						val := value.(float32)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if fmt.Sprint(v) == val {
+								shouldAppend = true
+								break
+							}
 						}
 					}
 				case []float64:
 					objVal := fieldRValue.Interface().([]float64)
-					val := value.(float64)
-					for _, v := range objVal {
-						if v == val {
-							shouldAppend = true
-							break
+					switch value.(type) {
+					case []float64:
+						val := value.([]float64)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case float64:
+						val := value.(float64)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if fmt.Sprint(v) == val {
+								shouldAppend = true
+								break
+							}
 						}
 					}
 				case []string:
 					objVal := fieldRValue.Interface().([]string)
-					val := value.(string)
-					for _, v := range objVal {
-						if v == val {
+					switch value.(type) {
+					case []string:
+						val := value.([]string)
+						for _, v := range objVal {
+							for _, v2 := range val {
+								if v == v2 {
+									shouldAppend = true
+									break
+								}
+							}
+						}
+					case string:
+						val := value.(string)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					default:
+						val := fmt.Sprint(value)
+						for _, v := range objVal {
+							if v == val {
+								shouldAppend = true
+								break
+							}
+						}
+					}
+				case string:
+					objVal := fieldRValue.Interface().(string)
+					switch value.(type) {
+					case []string:
+						val := value.([]string)
+						for _, v := range val {
+							if v == objVal {
+								shouldAppend = true
+								break
+							}
+
+						}
+					case string:
+						val := value.(string)
+
+						if strings.Contains(objVal, val) {
+							shouldAppend = true
+							break
+						}
+
+					default:
+						val := fmt.Sprint(value)
+						if strings.Contains(objVal, val) {
 							shouldAppend = true
 							break
 						}
